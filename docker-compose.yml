@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+    container_name: spring_api
+    depends_on:
+      - db
+    environment:
+      - POSTGRES_USER=hardwareInfo_db
+      - POSTGRES_PASSWORD=hardwareInfo_db
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:2345/hardwareInfo_db
+      - SPRING_DATASOURCE_USERNAME=hardwareInfo_db
+      - SPRING_DATASOURCE_PASSWORD=hardwareInfo_db
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+
+    ports:
+      - "3000:1234"
+
+  db:
+    image: postgres
+    container_name: db
+    volumes:
+      - db_pg_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    environment:
+      - POSTGRES_USER=hardwareInfo_db
+      - POSTGRES_PASSWORD=hardwareInfo_db
+      - POSTGRES_DB=hardwareInfo_db
+    ports:
+      - "2345:5432"
+volumes:
+  db_pg_data:
