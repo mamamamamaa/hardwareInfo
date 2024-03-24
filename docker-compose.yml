@@ -14,10 +14,13 @@ services:
       - SPRING_DATASOURCE_USERNAME=hardwareInfo_db
       - SPRING_DATASOURCE_PASSWORD=hardwareInfo_db
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-
     ports:
       - "3000:1234"
-
+    develop:
+      watch:
+        - action: rebuild
+          path: src/main/java
+          target: src/main/java/
   db:
     image: postgres
     container_name: db

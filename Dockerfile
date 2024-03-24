@@ -1,3 +1,4 @@
+# Build
 FROM openjdk:22-jdk-oracle AS build
 
 WORKDIR /app
@@ -11,7 +12,9 @@ RUN chmod +x mvnw
 
 RUN ./mvnw spring-boot:build-image
 
-FROM openjdk:22-jdk-oracle
+
+# Prod
+FROM openjdk:22-jdk-oracle AS production
 
 WORKDIR /app
 
@@ -19,10 +22,15 @@ COPY --from=build /app/target/*.jar /app/application.jar
 
 ENTRYPOINT ["java", "-jar", "/app/application.jar"]
 
-FROM openjdk:22-jdk-oracle
+# Dev
+FROM openjdk:22-jdk-oracle AS development
 
 WORKDIR /app
+COPY .mvn/ .mvn
+COPY mvnw pom.xml ./
 
-COPY . .
+RUN ./mvnw dependency:go-offline
 
-ENTRYPOINT ["./mvnw", "spring-boot:run"]
+COPY src ./src
+
+CMD ["./mvnw", "spring-boot:run"]
