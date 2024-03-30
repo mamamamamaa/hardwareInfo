@@ -4,6 +4,7 @@ services:
   app:
     build:
       context: .
+      dockerfile: Dockerfile.unix
     container_name: spring_api
     depends_on:
       - db
@@ -16,11 +17,8 @@ services:
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
     ports:
       - "3000:1234"
-    develop:
-      watch:
-        - action: rebuild
-          path: src/main/java
-          target: src/main/java/
+    volumes:
+      - ./src:/app/src
   db:
     image: postgres
     container_name: db
@@ -35,3 +33,4 @@ services:
       - "2345:5432"
 volumes:
   db_pg_data:
+  app:

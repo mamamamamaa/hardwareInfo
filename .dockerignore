@@ -24,7 +24,7 @@
 **/charts
 **/docker-compose*
 **/compose*
-**/Dockerfile*
+Dockerfile.win
 **/node_modules
 **/npm-debug.log
 **/obj
