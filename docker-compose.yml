@@ -1,24 +1,24 @@
 version: '3.8'
 
 services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile.unix
-    container_name: spring_api
-    depends_on:
-      - db
-    environment:
-      - POSTGRES_USER=hardwareInfo_db
-      - POSTGRES_PASSWORD=hardwareInfo_db
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:2345/hardwareInfo_db
-      - SPRING_DATASOURCE_USERNAME=hardwareInfo_db
-      - SPRING_DATASOURCE_PASSWORD=hardwareInfo_db
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-    ports:
-      - "3000:1234"
-    volumes:
-      - ./src:/app/src
+#  app:
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    container_name: spring_api
+#    depends_on:
+#      - db
+#    environment:
+#      - POSTGRES_USER=hardwareInfo_db
+#      - POSTGRES_PASSWORD=hardwareInfo_db
+#      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:2345/hardwareInfo_db
+#      - SPRING_DATASOURCE_USERNAME=hardwareInfo_db
+#      - SPRING_DATASOURCE_PASSWORD=hardwareInfo_db
+#      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+#    ports:
+#      - "3000:1234"
+#    volumes:
+#      - ./src:/app/src
   db:
     image: postgres
     container_name: db
@@ -33,4 +33,4 @@ services:
       - "2345:5432"
 volumes:
   db_pg_data:
-  app:
+#  app:
