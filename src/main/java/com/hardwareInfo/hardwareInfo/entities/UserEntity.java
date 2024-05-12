@@ -23,6 +23,7 @@ public class UserEntity implements UserDetails {
     @Column(name = "user_id")
     private Long id;
 
+    @Column(unique = true)
     private String username;
 
     @Column(name = "hash_pass")
@@ -31,6 +32,7 @@ public class UserEntity implements UserDetails {
     @Column(name = "avatar_url")
     private String avatarUrl;
 
+    @Column(unique = true)
     private String email;
 
     @OneToMany(mappedBy = "createdBy")
