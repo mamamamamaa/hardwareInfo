@@ -14,8 +14,8 @@ public class HardwareInfoApplication {
 	}
 
 	@GetMapping
-	public String helloBebra() {
-		return "Hello bebra";
+	public String helloWorld() {
+		return "Hello World";
 	}
 
 }

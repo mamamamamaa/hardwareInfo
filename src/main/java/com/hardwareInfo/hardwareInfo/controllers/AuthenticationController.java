@@ -22,14 +22,14 @@ public class AuthenticationController {
     private final AuthenticationService authService;
     private final ModelMapper modelMapper;
 
-    @PostMapping("/sign_up")
+    @PostMapping("/sign-up")
     public ResponseEntity<AuthenticationResponse> register(
             @RequestBody RegisterRequest request
     ) {
         return ResponseEntity.ok(authService.register(request));
     }
 
-    @PostMapping("/sign_in")
+    @PostMapping("/sign-in")
     public ResponseEntity<AuthenticationResponse> authenticate(
             @RequestBody AuthenticationRequest request
     ) {
