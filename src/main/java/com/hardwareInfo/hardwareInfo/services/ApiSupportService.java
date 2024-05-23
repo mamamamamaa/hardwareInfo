@@ -1,38 +1,45 @@
 package com.hardwareInfo.hardwareInfo.services;
 
 import com.hardwareInfo.hardwareInfo.entities.ApiSupportEntity;
+import com.hardwareInfo.hardwareInfo.exceptions.ApiSupportsNotFoundException;
 import com.hardwareInfo.hardwareInfo.repositories.ApiSupportRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 
-import java.util.Optional;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class ApiSupportService {
     private final ApiSupportRepository apiSupportRepository;
+    private final ModelMapper modelMapper;
 
-    public Optional<ApiSupportEntity> getApiSupportEntityById(Long id){
-
-        return apiSupportRepository.findById(id);
+    public List<ApiSupportEntity> getAllApiSupports() {
+        return apiSupportRepository.findAll();
     }
-@PutMapping
-    public Optional<ApiSupportEntity> updateApiSupportService(ApiSupportEntity newApiSupportEntity, Long id){
 
-        return apiSupportRepository.findById(id).map( apiSupport-> {
-            apiSupport.setCuda(newApiSupportEntity.getCuda());
-            apiSupport.setVulcan(newApiSupportEntity.getVulcan());
-            apiSupport.setDirectX(newApiSupportEntity.getDirectX());
-            apiSupport.setGraphicsCard(newApiSupportEntity.getGraphicsCard());
-            return apiSupport;
-        });
+    public ApiSupportEntity getApiSupportById(Long id) {
+        return apiSupportRepository.findById(id)
+                .orElseThrow(() -> new ApiSupportsNotFoundException("API Support not found with id + " + id));
     }
-@DeleteMapping
-    public void deleteApiSupportService(Long id){
 
+    public ApiSupportEntity createApiSupport(ApiSupportEntity apiSupport) {
+        return apiSupportRepository.save(apiSupport);
+    }
+
+    public ApiSupportEntity updateApiSupport(Long id, ApiSupportEntity newApiSupport) {
+        ApiSupportEntity existingApiSupport = apiSupportRepository.findById(id)
+                .orElseThrow(() -> new ApiSupportsNotFoundException("API Support not found with id + " + id));
+
+        modelMapper.map(newApiSupport, existingApiSupport);
+        return apiSupportRepository.save(existingApiSupport);
+    }
+
+    public void deleteApiSupport(Long id) {
+        if(!apiSupportRepository.existsById(id)) {
+            throw new ApiSupportsNotFoundException("API Support not found with id + " + id);
+        }
         apiSupportRepository.deleteById(id);
     }
-
 }

@@ -1,46 +1,47 @@
 package com.hardwareInfo.hardwareInfo.services;
 
+import com.hardwareInfo.hardwareInfo.entities.ArchitectureEntity;
 import com.hardwareInfo.hardwareInfo.entities.BenchmarkResultEntity;
+import com.hardwareInfo.hardwareInfo.exceptions.ArchitectureNotFoundException;
+import com.hardwareInfo.hardwareInfo.exceptions.BenchmarkResultNotFoundException;
 import com.hardwareInfo.hardwareInfo.repositories.BenchmarkResultRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class BenchmarkResultService {
     private final BenchmarkResultRepository benchmarkResultRepository;
+    private final ModelMapper modelMapper;
+
+    public List<BenchmarkResultEntity> getAllBenchmarkResults() {
+        return benchmarkResultRepository.findAll();
+    }
+
+    public BenchmarkResultEntity getBenchmarkResultById(Long id) {
+        return benchmarkResultRepository.findById(id)
+                .orElseThrow(() -> new BenchmarkResultNotFoundException("Benchmark Result not found with id + " + id));
+    }
 
     public BenchmarkResultEntity createBenchmarkResult(BenchmarkResultEntity benchmarkResultEntity){
         return benchmarkResultRepository.save(benchmarkResultEntity);
     }
 
-    @PutMapping
-    public Optional<BenchmarkResultEntity> updateBenchmarkResult(BenchmarkResultEntity newBenchmark,
-                                                                 Long id){
+    public BenchmarkResultEntity updateBenchmarkResult(Long id, BenchmarkResultEntity newBenchmarkResultEntity) {
+        BenchmarkResultEntity existingBenchmarkResultEntity = benchmarkResultRepository.findById(id)
+                .orElseThrow(() -> new BenchmarkResultNotFoundException("Benchmark Result not found with id + " + id));
 
-        return benchmarkResultRepository.findById(id).map( oldEntity ->{
-            oldEntity.setBenchmark(newBenchmark.getBenchmark());
-            oldEntity.setGraphicsCard(newBenchmark.getGraphicsCard());
-            oldEntity.setScore(newBenchmark.getScore());
-            return oldEntity;
-        });
-    }
-    public List<BenchmarkResultEntity> getAllBenchmarkResults(){
-        return benchmarkResultRepository.findAll();
+        modelMapper.map(newBenchmarkResultEntity, existingBenchmarkResultEntity);
+        return benchmarkResultRepository.save(existingBenchmarkResultEntity);
     }
 
-    public Optional<BenchmarkResultEntity> getBenchMarkById(Long id){
-
-        return benchmarkResultRepository.findById(id);
-    }
-
-    @DeleteMapping
-    public void deleteBenchmarkResult(Long id){
+    public void deleteBenchmarkResult(Long id) {
+        if(!benchmarkResultRepository.existsById(id)) {
+            throw new BenchmarkResultNotFoundException("Benchmark Result not found with id + " + id);
+        }
         benchmarkResultRepository.deleteById(id);
     }
 }

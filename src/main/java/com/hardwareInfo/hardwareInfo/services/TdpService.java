@@ -1,40 +1,45 @@
 package com.hardwareInfo.hardwareInfo.services;
 
 import com.hardwareInfo.hardwareInfo.entities.TdpEntity;
+import com.hardwareInfo.hardwareInfo.exceptions.TdpNotFoundException;
 import com.hardwareInfo.hardwareInfo.repositories.TdpRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
 public class TdpService {
     private final TdpRepository tdpRepository;
+    private final ModelMapper modelMapper;
 
-    public List<TdpEntity> getAllTdps(){
+    public List<TdpEntity> getAllTdps() {
         return tdpRepository.findAll();
     }
 
-    public Optional<TdpEntity> getTdpEntityById(Long id){
-        return tdpRepository.findById(id);
+    public TdpEntity getTdpById(Long id) {
+        return tdpRepository.findById(id)
+                .orElseThrow(() -> new TdpNotFoundException("Tdp not found with id + " + id));
     }
 
-    @PutMapping
-    public Optional<TdpEntity> updateTdp(Long id, TdpEntity newTdp){
-
-        return tdpRepository.findById(id).map( tdp-> {
-            tdp.setTdpValue(newTdp.getTdpValue());
-            tdp.setGraphicsCards(newTdp.getGraphicsCards());
-            return tdp;
-        });
-
+    public TdpEntity createTdp(TdpEntity tdpEntity) {
+        return tdpRepository.save(tdpEntity);
     }
-    @DeleteMapping
-    public void deleteTdp(Long id){
+
+    public TdpEntity updateTdp(Long id, TdpEntity newTdpEntity) {
+        TdpEntity existingTdpEntity = tdpRepository.findById(id)
+                .orElseThrow(() -> new TdpNotFoundException("Tdp not found with id + " + id));
+
+        modelMapper.map(newTdpEntity, existingTdpEntity);
+        return tdpRepository.save(existingTdpEntity);
+    }
+
+    public void deleteTdp(Long id) {
+        if(!tdpRepository.existsById(id)) {
+            throw new TdpNotFoundException("Tdp not found with id + " + id);
+        }
         tdpRepository.deleteById(id);
     }
 }

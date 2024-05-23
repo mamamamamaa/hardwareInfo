@@ -2,44 +2,45 @@ package com.hardwareInfo.hardwareInfo.services;
 
 import com.hardwareInfo.hardwareInfo.entities.VendorEntity;
 
+import com.hardwareInfo.hardwareInfo.exceptions.VendorNotFoundException;
 import com.hardwareInfo.hardwareInfo.repositories.VendorRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 
 import java.util.List;
-import java.util.Optional;
 
 @RequiredArgsConstructor
 @Service
 public class VendorService {
     private final VendorRepository vendorRepository;
+    private final ModelMapper modelMapper;
 
-    public VendorEntity createVendor(VendorEntity vendorEntity){
-
-        return vendorRepository.save(vendorEntity);
-    }
-    public Optional<VendorEntity> getVendorByID(Long id){
-        return vendorRepository.findById(id);
-    }
-
-    public List<VendorEntity> getAllVendors(){
+    public List<VendorEntity> getAllVendors() {
         return vendorRepository.findAll();
     }
-    @PutMapping
-    public Optional<VendorEntity> updateVendor(Long id, VendorEntity newVendor){
 
-        return vendorRepository.findById(id).map( vendor-> {
-            vendor.setGpuVendor(newVendor.getGpuVendor());
-            vendor.setGpuModels(newVendor.getGpuModels());
-            return vendor;
-        });
+    public VendorEntity getVendorById(Long id) {
+        return vendorRepository.findById(id)
+                .orElseThrow(() -> new VendorNotFoundException("Vendor not found with id + " + id));
     }
-    @DeleteMapping
-    public void deleteVendor(Long id){
 
+    public VendorEntity createVendor(VendorEntity vendorEntity) {
+        return vendorRepository.save(vendorEntity);
+    }
+
+    public VendorEntity updateVendor(Long id, VendorEntity newVendorEntity) {
+        VendorEntity existingVendorEntity = vendorRepository.findById(id)
+                .orElseThrow(() -> new VendorNotFoundException("Vendor not found with id + " + id));
+
+        modelMapper.map(newVendorEntity, existingVendorEntity);
+        return vendorRepository.save(existingVendorEntity);
+    }
+
+    public void deleteVendor(Long id) {
+        if(!vendorRepository.existsById(id)) {
+            throw new VendorNotFoundException("Vendor not found with id + " + id);
+        }
         vendorRepository.deleteById(id);
     }
-
 }

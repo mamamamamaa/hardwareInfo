@@ -8,7 +8,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
-@Table(name = "benchmark_results")
+@Table(name = "api_supports")
 public class ApiSupportEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
